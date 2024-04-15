@@ -3,46 +3,9 @@ import cv2
 import os
  
 def test():
-    # 加载图像
-    image_A_path = './testimages/m416-f-w.jpg'
-    image_B_path = './testimages/m762-f-w.jpg'
-    image_C_path = './testimages/m762-2.jpg'
-
-    image_A = cv2.imread(image_A_path)
-    image_B = cv2.imread(image_B_path)
-    image_C = cv2.imread(image_C_path)
+    screen_images = cv2.imread("./testimages/m762-2.jpg")
+    startdeal(screen_images,"test.jpg")
     
-
-
-    # 获取图像尺寸
-    height, width = image_C.shape[:2]
-
-    # 定义裁剪的比例范围
-    x_start, x_end = int(0.75 * width), int(0.835 * width)
-    y_start, y_end = int(0.87 * height), int(0.975 * height)
-    search_region_coords = (x_start, y_start, x_end - x_start, y_end - y_start)
-
-    target_images = {
-        'm416': image_A,
-        'm762': image_B
-    }
-
-    # 找到最相似的目标和轮廓
-    best_path, best_contour,best_rect,_ = utils.find_most_similar(target_images, image_C, search_region_coords)
-    print("Most similar to:", best_path)
-
-    # 在原图上绘制最相似目标的轮廓
-    utils.draw_contour(image_C, best_contour, (x_start, y_start))
-
-    # 在原图上绘制最相似目标的轮廓
-    utils.draw_rectangle(image_C, (x_start+best_rect[0],y_start+best_rect[1],best_rect[2],best_rect[3]))
-
-    cv2.imshow("Matched Result with Contour", image_C)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-
-
 
 def updateLua(luapath, info):
     # 打开 test.lua 文件以覆盖写入模式
@@ -51,9 +14,7 @@ def updateLua(luapath, info):
         file.write(info)
 
 
-
-
-def startdeal(screen_images,imagename="",save_dir="./output"):
+def startdeal(screen_images,imagename="",save_dir=""):
      # 遍历枪械文件夹
     guns_dir = "./guns"
     guns_imgs = os.listdir(guns_dir)
@@ -73,7 +34,6 @@ def startdeal(screen_images,imagename="",save_dir="./output"):
         images_fea = cv2.imread(rpath)
         guns_images_map[guns_name]= images_fea
         
-        # print("==> ",rpath,guns_name)
         
     # screen_images = cv2.imread(screen_images_path)
     # 获取图像尺寸
@@ -85,10 +45,10 @@ def startdeal(screen_images,imagename="",save_dir="./output"):
     search_region_coords = (x_start, y_start, x_end - x_start, y_end - y_start)
     
     # 找到最相似的目标和轮廓
-    guns_name_predict, best_contour,best_rect,_ = utils.find_most_similar(guns_images_map, screen_images, search_region_coords)
+    guns_name_predict, best_contour,best_rect,max_similarity,_ = utils.find_most_similar(guns_images_map, screen_images, search_region_coords)
     
     
-    print("Most similar to:", guns_name_predict)
+    print("Most similar to:", guns_name_predict," max_similarity: ",max_similarity)
     
     gunsinfo = 'guns_name = "' + guns_name_predict + '"'
     
@@ -134,12 +94,10 @@ if __name__ == "__main__":
         count += 1
         if count %30==0:
             imagename = os.path.basename(file_path).split(".")[0]+str(count)
-            startdeal(frame,imagename,save_dir="output2")
+            startdeal(frame,imagename,save_dir="")
             print(count)
 
     vc.release()
     
         
-    # screen_images = cv2.imread("./testimages/m416-2.jpg")
-    # startdeal(screen_images,"test.jpg")
-    
+     

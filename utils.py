@@ -40,15 +40,17 @@ def find_most_similar(target_images, search_image, search_region_coords):
             candidate_gray = cv2.cvtColor(candidate, cv2.COLOR_BGR2GRAY)
 
             shape_similarity = cv2.matchShapes(target_gray, candidate_gray, cv2.CONTOURS_MATCH_I1, 0)
-
+            print("similarity ==> ",shape_similarity)
             if shape_similarity < max_similarity or max_similarity == -1:
                 max_similarity = shape_similarity
                 best_match = candidate
                 guns_name = name
                 best_contour = cnt
                 best_rect = ( x, y, w, h)
+                 
 
-    return guns_name, best_contour,best_rect,best_match
+    return guns_name, best_contour,best_rect,max_similarity,best_match
+
 
 def draw_contour(image, contour, offset, color=(0, 255, 0), thickness=2):
     """ 在图像上绘制轮廓 """
