@@ -109,10 +109,24 @@ def test_imgdir():
         screen_images = cv2.imread(imgpath)
         startdeal(screen_images,imgs.split(".")[0],"output")
     
+def test_contours():
+    
+    # mask = util.preprocess_image_for_white_objects(search_region)
+    imgs= "./2kguns/AK47.jpg"
+    search_region = cv2.imread(imgs)
+    mask = util.preprocess_image_for_white_objects(search_region)
+    
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    util.showContours(search_region,contours,(0,0))
+    
+    
+ 
 if __name__ == "__main__":
     
     # test_imgdir()
-    test_video()
+    # test_video()
+    test_contours()
     
         
      

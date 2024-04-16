@@ -68,6 +68,18 @@ def draw_rectangle(image, rect, color=(0, 255, 0), thickness=2):
     cv2.rectangle(image, (x, y), (x + w, y + h), color, thickness)
     
  
+ 
+def showContours(image, contours, offset): 
+    
+    for cnt  in contours:
+        draw_contour(image, cnt, offset)
+        
+    cv2.imshow("Matched Result with Contour", image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    
+    
+ 
 def SplitVideo(videopath, ratio=30 ,savedir=""):
     
     if savedir =="" or videopath=="":
