@@ -48,6 +48,8 @@ def startdeal(screen_images,imagename="",save_dir=""):
     guns_name_predict, best_contour,best_rect,max_similarity,_ = utils.find_most_similar(guns_images_map, screen_images, search_region_coords)
     
     
+    if max_similarity == -1:
+        return
     print("Most similar to:", guns_name_predict," max_similarity: ",max_similarity)
     
     gunsinfo = 'guns_name = "' + guns_name_predict + '"'
@@ -77,7 +79,7 @@ def startdeal(screen_images,imagename="",save_dir=""):
 
 if __name__ == "__main__":
     
-    file_path = 'testimages/video-2.mp4'
+    file_path = 'D:\\wuliang\\Aworkspace\\pyw\\video\\guns_test.mp4'
 
     vc = cv2.VideoCapture(file_path)  # import video files
     # determine whether to open normally
@@ -94,7 +96,7 @@ if __name__ == "__main__":
         count += 1
         if count %30==0:
             imagename = os.path.basename(file_path).split(".")[0]+str(count)
-            startdeal(frame,imagename,save_dir="")
+            startdeal(frame,imagename,save_dir="output")
             print(count)
 
     vc.release()

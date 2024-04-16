@@ -1,1 +1,1 @@
-guns_name = "m762"
+guns_name = "mk47"
