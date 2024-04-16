@@ -18,7 +18,7 @@ def preprocess_image_for_white_objects(image):
 
 
 
-def find_most_similar(target_images, search_image, search_region_coords):
+def find_most_similar_old(target_images, search_image, search_region_coords):
     """ 在给定区域内找到与目标图像最相似的图像，并返回最相似目标的轮廓信息和矩形框 """
     x, y, w, h = search_region_coords
     search_region = search_image[y:y+h, x:x+w]
@@ -51,6 +51,47 @@ def find_most_similar(target_images, search_image, search_region_coords):
                  
 
     return guns_name, best_contour,best_rect,max_similarity,best_match
+
+
+
+def find_most_similar(target_images, search_image, search_region_coords):
+    # 处理搜索区域
+    x, y, w, h = search_region_coords
+    search_region = search_image[y:y+h, x:x+w]
+    search_region_mask = preprocess_image_for_white_objects(search_region)
+    search_contours, _ = cv2.findContours(search_region_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    # 初始化最佳匹配变量
+    best_match = None
+    max_similarity = -1
+    best_name = None
+    best_contour = None
+    best_rect = None
+
+    # 处理目标图像，计算每个图像的轮廓
+    target_contours = {}
+    for name, target_img in target_images.items():
+        mask = preprocess_image_for_white_objects(target_img)
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        # 找到面积最大的轮廓
+        max_contour = max(contours, key=cv2.contourArea)
+    
+        target_contours[name] = max_contour #contours[0]  # 假设每个目标图像中只有一个显著轮廓
+
+    search_cnt = max(search_contours, key=cv2.contourArea)
+    # 比较轮廓
+    for name, target_cnt in target_contours.items():
+     
+        shape_similarity = cv2.matchShapes(target_cnt, search_cnt, cv2.CONTOURS_MATCH_I1, 0)
+        if shape_similarity < max_similarity or max_similarity == -1:
+            max_similarity = shape_similarity
+            best_match = search_cnt
+            best_name = name
+            best_rect = cv2.boundingRect(best_match)
+    
+    # 返回最佳匹配的目标图像名、轮廓、边界矩形和相似度
+    return best_name, best_contour, best_rect, max_similarity, best_match
 
 
 def draw_contour(image, contour, offset, color=(0, 255, 0), thickness=2):

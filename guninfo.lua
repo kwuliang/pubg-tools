@@ -1,1 +1,1 @@
-guns_name = "AK47"
+guns_name = "AUG"
