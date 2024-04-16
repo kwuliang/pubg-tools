@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import os
 
 
 def preprocess_image_for_white_objects(image):
@@ -65,3 +66,41 @@ def draw_rectangle(image, rect, color=(0, 255, 0), thickness=2):
     """ 在图像上绘制矩形 """
     x, y, w, h = rect
     cv2.rectangle(image, (x, y), (x + w, y + h), color, thickness)
+    
+ 
+def SplitVideo(videopath, ratio=30 ,savedir=""):
+    
+    if savedir =="" or videopath=="":
+        return 
+    
+    # videopath = 'D:\\wuliang\\Aworkspace\\pyw\\video\\guns_test.mp4'
+
+    vc = cv2.VideoCapture(videopath)  # import video files
+    # determine whether to open normally
+    if vc.isOpened():
+        ret, frame = vc.read()
+    else:
+        ret = False
+    
+    count = 0  # count the number of pictures
+    videoname = os.path.basename(videopath).split(".")[0]
+    # loop read video frame
+    while ret:
+        ret, frame = vc.read()
+        count += 1
+        if count %ratio==0:
+            
+            imagename = videoname+"_"+str(count)+".jpg"
+            impath = os.path.join(savedir,imagename)
+            
+            cv2.imwrite(impath, frame)
+            
+            print(impath,"==> done")
+
+    vc.release()
+
+ 
+if __name__ == "__main__":
+    
+    videopath = 'D:\\wuliang\\Aworkspace\\pyw\\video\\guns_test.mp4'
+    SplitVideo(videopath,30,"../pubgimgs")
