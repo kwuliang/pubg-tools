@@ -1,4 +1,4 @@
-import utils
+import utils as util
 import cv2
 import os
  
@@ -14,15 +14,14 @@ def updateLua(luapath, info):
         file.write(info)
 
 
-def startdeal(screen_images,imagename="",save_dir=""):
+def startdeal(screen_images,imagename="",save_dir="",guns_dir= "./guns"):
      # 遍历枪械文件夹
-    guns_dir = "./guns"
-    guns_imgs = os.listdir(guns_dir)
+    if guns_dir=="" :
+        return 
     
+    guns_imgs = os.listdir(guns_dir)
     # 获取输入（屏幕截图）
     print(guns_imgs)
-    
-     
     
     guns_images_map={}
     for guns in guns_imgs:
@@ -45,7 +44,7 @@ def startdeal(screen_images,imagename="",save_dir=""):
     search_region_coords = (x_start, y_start, x_end - x_start, y_end - y_start)
     
     # 找到最相似的目标和轮廓
-    guns_name_predict, best_contour,best_rect,max_similarity,_ = utils.find_most_similar(guns_images_map, screen_images, search_region_coords)
+    guns_name_predict, best_contour,best_rect,max_similarity,_ = util.find_most_similar(guns_images_map, screen_images, search_region_coords)
     
     
     if max_similarity == -1:
@@ -61,10 +60,10 @@ def startdeal(screen_images,imagename="",save_dir=""):
         if imagename == "":
             imagename ="test"
         # 在原图上绘制最相似目标的轮廓
-        utils.draw_contour(screen_images, best_contour, (x_start, y_start))
+        util.draw_contour(screen_images, best_contour, (x_start, y_start))
 
         # 在原图上绘制最相似目标的轮廓
-        utils.draw_rectangle(screen_images, (x_start+best_rect[0],y_start+best_rect[1],best_rect[2],best_rect[3]))
+        util.draw_rectangle(screen_images, (x_start+best_rect[0],y_start+best_rect[1],best_rect[2],best_rect[3]))
         
         imagename = imagename+"_"+guns_name_predict+".jpg"
         impath = os.path.join(save_dir,imagename)
@@ -76,9 +75,9 @@ def startdeal(screen_images,imagename="",save_dir=""):
         # cv2.imshow("Matched Result with Contour", screen_images)
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
-
-if __name__ == "__main__":
-    
+        
+        
+def test_video():
     file_path = 'D:\\wuliang\\Aworkspace\\pyw\\video\\guns_test.mp4'
 
     vc = cv2.VideoCapture(file_path)  # import video files
@@ -100,6 +99,20 @@ if __name__ == "__main__":
             print(count)
 
     vc.release()
+    
+    
+def test_imgdir():
+    dirpath= "../pubgimgs"
+    imglist = os.listdir(dirpath)
+    for imgs in imglist:
+        imgpath =os.path.join(dirpath,imgs)
+        screen_images = cv2.imread(imgpath)
+        startdeal(screen_images,imgs.split(".")[0],"output")
+    
+if __name__ == "__main__":
+    
+    # test_imgdir()
+    test_video()
     
         
      
