@@ -18,7 +18,7 @@ def preprocess_image_for_white_objects(image):
 
 
 
-def find_most_similar(target_images, search_image, search_region_coords):
+def find_most_similar_old(target_images, search_image, search_region_coords):
     """ 在给定区域内找到与目标图像最相似的图像，并返回最相似目标的轮廓信息和矩形框 """
     x, y, w, h = search_region_coords
     search_region = search_image[y:y+h, x:x+w]
@@ -54,7 +54,7 @@ def find_most_similar(target_images, search_image, search_region_coords):
 
 
 
-def find_most_similar_strong(target_images, search_image, search_region_coords):
+def find_most_similar(target_images, search_image, search_region_coords):
     # 处理搜索区域
     x, y, w, h = search_region_coords
     search_region = search_image[y:y+h, x:x+w]
@@ -73,22 +73,22 @@ def find_most_similar_strong(target_images, search_image, search_region_coords):
     for name, target_img in target_images.items():
         mask = preprocess_image_for_white_objects(target_img)
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        # 将所有轮廓点合并到一个列表中
-        all_contour_points = np.concatenate([c for c in contours])
-        # 计算所有点的凸包
-        merged_contour = cv2.convexHull(all_contour_points)
+        
+        # 找到面积最大的轮廓
+        max_contour = max(contours, key=cv2.contourArea)
     
-        target_contours[name] = merged_contour #contours[0]  # 假设每个目标图像中只有一个显著轮廓
+        target_contours[name] = max_contour #contours[0]  # 假设每个目标图像中只有一个显著轮廓
 
+    search_cnt = max(search_contours, key=cv2.contourArea)
     # 比较轮廓
     for name, target_cnt in target_contours.items():
-        for search_cnt in search_contours:
-            shape_similarity = cv2.matchShapes(target_cnt, search_cnt, cv2.CONTOURS_MATCH_I1, 0)
-            if shape_similarity > max_similarity:
-                max_similarity = shape_similarity
-                best_match = search_cnt
-                best_name = name
-                best_rect = cv2.boundingRect(best_match)
+     
+        shape_similarity = cv2.matchShapes(target_cnt, search_cnt, cv2.CONTOURS_MATCH_I1, 0)
+        if shape_similarity < max_similarity or max_similarity == -1:
+            max_similarity = shape_similarity
+            best_match = search_cnt
+            best_name = name
+            best_rect = cv2.boundingRect(best_match)
     
     # 返回最佳匹配的目标图像名、轮廓、边界矩形和相似度
     return best_name, best_contour, best_rect, max_similarity, best_match

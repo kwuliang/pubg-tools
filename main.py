@@ -21,7 +21,7 @@ def startdeal(screen_images,imagename="",save_dir="output",guns_dir= "./guns"):
     
     guns_imgs = os.listdir(guns_dir)
     # 获取输入（屏幕截图）
-    print(guns_imgs)
+    # print(guns_imgs)
     
     guns_images_map={}
     for guns in guns_imgs:
@@ -39,7 +39,7 @@ def startdeal(screen_images,imagename="",save_dir="output",guns_dir= "./guns"):
     height, width = screen_images.shape[:2]
 
     # 定义裁剪的比例范围
-    x_start, x_end = int(0.75 * width), int(0.835 * width)
+    x_start, x_end = int(0.71 * width), int(0.835 * width)
     y_start, y_end = int(0.87 * height), int(0.975 * height)
     search_region_coords = (x_start, y_start, x_end - x_start, y_end - y_start)
     
@@ -49,7 +49,7 @@ def startdeal(screen_images,imagename="",save_dir="output",guns_dir= "./guns"):
     
     if max_similarity == -1:
         return
-    print("Most similar to:", guns_name_predict," max_similarity: ",max_similarity)
+    print(imagename," Most similar to:", guns_name_predict," max_similarity: ",max_similarity)
     
     gunsinfo = 'guns_name = "' + guns_name_predict + '"'
     
@@ -59,12 +59,15 @@ def startdeal(screen_images,imagename="",save_dir="output",guns_dir= "./guns"):
         
         if imagename == "":
             imagename ="test"
-        # 在原图上绘制最相似目标的轮廓
-        util.draw_contour(screen_images, best_contour, (x_start, y_start))
-
-        # 在原图上绘制最相似目标的轮廓
-        util.draw_rectangle(screen_images, (x_start+best_rect[0],y_start+best_rect[1],best_rect[2],best_rect[3]))
         
+        if  best_contour is not None:
+            # 在原图上绘制最相似目标的轮廓
+            util.draw_contour(screen_images, best_contour, (x_start, y_start))
+
+        if  best_rect is not None:
+            # 在原图上绘制最相似目标的轮廓
+            util.draw_rectangle(screen_images, (x_start+best_rect[0],y_start+best_rect[1],best_rect[2],best_rect[3]))
+            
         imagename = imagename+"_"+guns_name_predict+".jpg"
         impath = os.path.join(save_dir,imagename)
         
@@ -115,7 +118,7 @@ def test_contours():
     # imgs= "./2kguns/AK47.jpg"
     # search_region = cv2.imread(imgs)
     
-    imgs ="../pubgimgs/guns_test_30.jpg"
+    imgs ="./testimgs/guns_test_90.jpg"
     search_image = cv2.imread(imgs)
     
     height, width = search_image.shape[:2]
