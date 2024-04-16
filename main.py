@@ -14,7 +14,7 @@ def updateLua(luapath, info):
         file.write(info)
 
 
-def startdeal(screen_images,imagename="",save_dir="",guns_dir= "./guns"):
+def startdeal(screen_images,imagename="",save_dir="output",guns_dir= "./2kguns"):
      # 遍历枪械文件夹
     if guns_dir=="" :
         return 
@@ -112,8 +112,21 @@ def test_imgdir():
 def test_contours():
     
     # mask = util.preprocess_image_for_white_objects(search_region)
-    imgs= "./2kguns/AK47.jpg"
-    search_region = cv2.imread(imgs)
+    # imgs= "./2kguns/AK47.jpg"
+    # search_region = cv2.imread(imgs)
+    
+    imgs ="../pubgimgs/guns_test_30.jpg"
+    search_image = cv2.imread(imgs)
+    
+    height, width = search_image.shape[:2]
+    # 定义裁剪的比例范围
+    x_start, x_end = int(0.75 * width), int(0.835 * width)
+    y_start, y_end = int(0.87 * height), int(0.975 * height)
+    
+    search_region_coords = (x_start, y_start, x_end - x_start, y_end - y_start)
+    x, y, w, h = search_region_coords
+    search_region = search_image[y:y+h, x:x+w]
+    
     mask = util.preprocess_image_for_white_objects(search_region)
     
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -124,9 +137,9 @@ def test_contours():
  
 if __name__ == "__main__":
     
-    # test_imgdir()
+    test_imgdir()
     # test_video()
-    test_contours()
+    # test_contours()
     
         
      
