@@ -14,7 +14,7 @@ def updateLua(luapath, info):
         file.write(info)
 
 
-def startdeal(screen_images,imagename="",save_dir="output",guns_dir= "./2kguns"):
+def startdeal(screen_images,imagename="",save_dir="output",guns_dir= "./guns"):
      # 遍历枪械文件夹
     if guns_dir=="" :
         return 
@@ -102,7 +102,7 @@ def test_video():
     
     
 def test_imgdir():
-    dirpath= "../pubgimgs"
+    dirpath= "testimgs"
     imglist = os.listdir(dirpath)
     for imgs in imglist:
         imgpath =os.path.join(dirpath,imgs)
