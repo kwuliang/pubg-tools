@@ -53,6 +53,47 @@ def find_most_similar(target_images, search_image, search_region_coords):
     return guns_name, best_contour,best_rect,max_similarity,best_match
 
 
+
+def find_most_similar_strong(target_images, search_image, search_region_coords):
+    # 处理搜索区域
+    x, y, w, h = search_region_coords
+    search_region = search_image[y:y+h, x:x+w]
+    search_region_mask = preprocess_image_for_white_objects(search_region)
+    search_contours, _ = cv2.findContours(search_region_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    # 初始化最佳匹配变量
+    best_match = None
+    max_similarity = -1
+    best_name = None
+    best_contour = None
+    best_rect = None
+
+    # 处理目标图像，计算每个图像的轮廓
+    target_contours = {}
+    for name, target_img in target_images.items():
+        mask = preprocess_image_for_white_objects(target_img)
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # 将所有轮廓点合并到一个列表中
+        all_contour_points = np.concatenate([c for c in contours])
+        # 计算所有点的凸包
+        merged_contour = cv2.convexHull(all_contour_points)
+    
+        target_contours[name] = merged_contour #contours[0]  # 假设每个目标图像中只有一个显著轮廓
+
+    # 比较轮廓
+    for name, target_cnt in target_contours.items():
+        for search_cnt in search_contours:
+            shape_similarity = cv2.matchShapes(target_cnt, search_cnt, cv2.CONTOURS_MATCH_I1, 0)
+            if shape_similarity > max_similarity:
+                max_similarity = shape_similarity
+                best_match = search_cnt
+                best_name = name
+                best_rect = cv2.boundingRect(best_match)
+    
+    # 返回最佳匹配的目标图像名、轮廓、边界矩形和相似度
+    return best_name, best_contour, best_rect, max_similarity, best_match
+
+
 def draw_contour(image, contour, offset, color=(0, 255, 0), thickness=2):
     """ 在图像上绘制轮廓 """
     # 因为轮廓是在搜索区域中找到的，需要加上偏移量来画在原始图像上
