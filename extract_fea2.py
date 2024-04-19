@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import os
 
 def extract_white_object_features(image):
     # 转换到HSV颜色空间
@@ -38,17 +39,28 @@ def extract_white_object_features(image):
     
     return features, contour_image
 
-# 读取图像
-image = cv2.imread('./guns/AK47.jpg')
-# 提取白色物体的特征和绘制轮廓的图像
-white_object_features, contour_image = extract_white_object_features(image)
 
-# 显示绘制轮廓的图像
-cv2.imshow('Contours', contour_image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+guns_dir ="./guns"
+guns_imgs = os.listdir(guns_dir)
+# 获取输入（屏幕截图）
+# print(guns_imgs)
 
-# 打印特征
-print("Feature of Merged Contours:")
-for key, value in white_object_features.items():
-    print(f"{key}: {value}")
+guns_images_map={}
+for guns in guns_imgs:
+
+    rpath = os.path.join(guns_dir,guns)
+    # 读取图像
+    image = cv2.imread(rpath)
+
+    # 提取白色物体的特征和绘制轮廓的图像
+    white_object_features, contour_image = extract_white_object_features(image)
+
+    # 显示绘制轮廓的图像
+    cv2.imshow('Contours', contour_image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    # 打印特征
+    print("Feature of Merged Contours:")
+    for key, value in white_object_features.items():
+        print(f"{key}: {value}")
