@@ -1,4 +1,4 @@
-import utils as util
+import utils.shapesft as shapesft
 import cv2
 import os
  
@@ -44,7 +44,7 @@ def startdeal(screen_images,imagename="",save_dir="output",guns_dir= "./guns"):
     search_region_coords = (x_start, y_start, x_end - x_start, y_end - y_start)
     
     # 找到最相似的目标和轮廓
-    guns_name_predict, best_contour,best_rect,max_similarity,_ = util.find_most_similar(guns_images_map, screen_images, search_region_coords)
+    guns_name_predict, best_contour,best_rect,max_similarity,_ = shapesft.find_most_similar(guns_images_map, screen_images, search_region_coords)
     
     
     if max_similarity == -1:
@@ -62,11 +62,11 @@ def startdeal(screen_images,imagename="",save_dir="output",guns_dir= "./guns"):
         
         if  best_contour is not None:
             # 在原图上绘制最相似目标的轮廓
-            util.draw_contour(screen_images, best_contour, (x_start, y_start))
+            shapesft.draw_contour(screen_images, best_contour, (x_start, y_start))
 
         if  best_rect is not None:
             # 在原图上绘制最相似目标的轮廓
-            util.draw_rectangle(screen_images, (x_start+best_rect[0],y_start+best_rect[1],best_rect[2],best_rect[3]))
+            shapesft.draw_rectangle(screen_images, (x_start+best_rect[0],y_start+best_rect[1],best_rect[2],best_rect[3]))
             
         imagename = imagename+"_"+guns_name_predict+".jpg"
         impath = os.path.join(save_dir,imagename)
@@ -130,11 +130,11 @@ def test_contours():
     x, y, w, h = search_region_coords
     search_region = search_image[y:y+h, x:x+w]
     
-    mask = util.preprocess_image_for_white_objects(search_region)
+    mask = shapesft.preprocess_image_for_white_objects(search_region)
     
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
-    util.showContours(search_region,contours,(0,0))
+    shapesft.showContours(search_region,contours,(0,0))
     
     
  
